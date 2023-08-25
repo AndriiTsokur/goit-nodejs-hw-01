@@ -14,39 +14,32 @@ program
 	.option('-e, --email <type>', 'user email')
 	.option('-p, --phone <type>', 'user phone');
 
-program.parse(process.argv);
+program.parse();
+// program.parse(process.argv) - outdated syntax
 
 const argv = program.opts();
 
-function invokeAction({ action, id, name, email, phone }) {
+const invokeAction = async ({ action, id, name, email, phone }) => {
 	switch (action) {
 		case 'list':
-			listContacts()
-				.then(data => console.table(data))
-				.catch(err => console.log(err.message));
-			break;
+			const allContacts = await listContacts();
+			return console.table(allContacts);
 
 		case 'get':
-			getContactById(id)
-				.then(data => console.log(data))
-				.catch(err => console.log(err.message));
-			break;
+			const exactContact = await getContactById(id);
+			return console.log(exactContact);
 
 		case 'add':
-			addContact(name, email, phone)
-				.then(data => console.log(data))
-				.catch(err => console.log(err.message));
-			break;
+			const newContact = await addContact(name, email, phone);
+			return console.log(newContact);
 
 		case 'remove':
-			removeContact(id)
-				.then(data => console.log(data))
-				.catch(err => console.log(err.message));
-			break;
+			const deleteContact = await removeContact(id);
+			return console.log(deleteContact);
 
 		default:
 			console.warn('\x1B[31m Unknown action type!');
 	}
-}
+};
 
 invokeAction(argv);
